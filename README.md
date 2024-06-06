@@ -34,6 +34,19 @@ npm i -g fiks
 Fiks has a very intuitive command line interface. Run the `fiks` command from the root of your application:
 
 ```
+# Automatically link all node_modules with npm i --no-save
+fiks link
+
+# Install packages in all repos
+fiks install
+
+# Update packages in all repos
+fiks update
+
+# Upgrade packages in all repos
+# Runs npm-check-updated -u && npm i under the hood for each repo
+fiks upgrade
+
 # Print which directories have changes we haven't pushed
 fiks status
 
