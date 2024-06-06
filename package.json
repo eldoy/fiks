@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Repo management tool",
   "main": "index.js",
+  "bin": {
+    "fiks": "bin/fiks.js"
+  },
   "scripts": {
     "test": "echo 'no test runner installed'"
   },
@@ -11,5 +14,8 @@
     "url": "https://github.com/eldoy/fiks"
   },
   "author": "Vidar Eldøy <vidar@eldoy.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "extras": "^0.12.2"
+  }
 }
