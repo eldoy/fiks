@@ -89,7 +89,7 @@ function finish(d, extra, error) {
 }
 
 function start() {
-  console.log('⚠️ ' + ` Root: ${root}`)
+  console.log('\n⚠️ ' + ` Root: ${root}`)
 
   var rep = repos.length ? repos : dir
   console.log('⚠️ ' + ` Repositories: ${rep.join(', ')}`)
@@ -206,6 +206,7 @@ async function run() {
       unknownCmd()
   }
 
+  console.log()
   process.exit(0)
 }
 
