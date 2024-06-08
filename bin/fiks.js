@@ -32,8 +32,8 @@ function usage() {
   fiks status - prints which directories have unpushed changes
   fiks push - push all repos at once (ask for commit message for each repo)
   fiks push "commit message" - push all repos at once with the same commit message
-  fiks pull - pull all repos, stashes uncommited changes
-  fiks pull repo1 repo2 - pull specified repos, stashes uncommited changes
+  fiks pull - pull all repos, stashes and reapplies uncommited changes
+  fiks pull repo1 repo2 - pull specified repos, stashes and reapplies uncommited changes
   fiks log - see a unified log of all repos, sorted by last change
   `)
   process.exit(0)
@@ -173,6 +173,7 @@ async function run() {
       walk(function (d) {
         extras.get(`git -C ./${d} stash`)
         extras.get(`git -C ./${d} pull --rebase`)
+        extras.get(`git -C ./${d} stash apply`)
         finish(d)
       })
       break
