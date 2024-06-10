@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+var farge = require('farge')()
 var extras = require('extras')
 var util = require('../lib/util.js')
 
@@ -12,14 +13,22 @@ var root = cwd.split('/').at(-1)
 var dir = extras.dir().filter((d) => !d.includes('.'))
 
 var ops = {
-  LINK: { cmd: 'link', start: 'Linking', finish: 'Linked' },
-  INSTALL: { cmd: 'install', start: 'Installing', finish: 'Installed' },
-  UPDATE: { cmd: 'update', start: 'Updating', finish: 'Updated' },
-  UPGRADE: { cmd: 'upgrade', start: 'Upgrading', finish: 'Upgraded' },
-  STATUS: { cmd: 'status', start: 'Getting status', finish: '' },
-  PUSH: { cmd: 'push', start: 'Pushing', finish: 'Pushed' },
-  PULL: { cmd: 'pull', start: 'Pulling', finish: 'Pulled' },
-  LOG: { cmd: 'log', start: 'Logging', finish: 'Logged' }
+  INSTALL: {
+    cmd: 'install',
+    start: 'Installing repositories',
+    finish: 'Installed'
+  },
+  LINK: { cmd: 'link', start: 'Linking repositories', finish: 'Linked' },
+  LOG: { cmd: 'log', start: 'Logging repositories', finish: 'Logged' },
+  PULL: { cmd: 'pull', start: 'Pulling repositories', finish: 'Pulled' },
+  PUSH: { cmd: 'push', start: 'Pushing repositories', finish: 'Pushed' },
+  STATUS: { cmd: 'status', start: 'Getting repositories status', finish: '' },
+  UPDATE: { cmd: 'update', start: 'Updating repositories', finish: 'Updated' },
+  UPGRADE: {
+    cmd: 'upgrade',
+    start: 'Upgrading repositories',
+    finish: 'Upgraded'
+  }
 }
 
 function usage() {
@@ -61,10 +70,12 @@ if (invalid.length) {
 
 function walk(cb) {
   var directories = repos.length ? repos : dir
+  var idx = 0
   for (var directory of directories) {
     var packages = directories.filter((d) => d != directory)
     try {
-      cb(directory, packages)
+      cb({ directory, packages }, idx)
+      idx++
     } catch (err) {
       console.error(`${root}/${directory}: ${err}`)
       process.exit(0)
@@ -73,6 +84,10 @@ function walk(cb) {
 }
 
 function finish(d, extra, error) {
+  if (!d) {
+    console.log()
+    return
+  }
   var action = cmd.charAt(0).toUpperCase() + cmd.slice(1)
   var symbol = '✅'
   if (error) {
@@ -89,100 +104,44 @@ function finish(d, extra, error) {
 }
 
 function start() {
-  console.log('\n⚠️ ' + ` Root: ${root}`)
+  farge.green.log('\n⚠️ ' + ` Root: `)
+  farge.white.log(`${root}\n`)
 
   var rep = repos.length ? repos : dir
-  console.log('⚠️ ' + ` Repositories: ${rep.join(', ')}`)
+  farge.green.log('⚠️ ' + ` Repositories: `)
+  farge.white.log(`${rep.join(', ')}\n`)
 
   var op = ops[cmd.toUpperCase()]
-  console.log(`\n🔥 ${op.start} repositories 🔥\n`)
+
+  farge.bold.green.log(`\n🔥 ${op.start} 🔥\n\n`)
 }
 
 async function run() {
   start()
 
   switch (cmd) {
-    case ops.LINK.cmd:
-      walk(function (d, packages) {
-        var ps = packages.map((p) => `./${p}`).join(' ')
-        extras.get(`npm --prefix ./${d} uninstall ${ps} --no-save`)
-        extras.get(`npm --prefix ./${d} i ${ps} --no-save`)
-        finish(d)
-      })
-      break
     case ops.INSTALL.cmd:
-      walk(function (d, packages) {
+      walk(function ({ directory, packages }) {
         var ps = packages.map((p) => `./${p}`).join(' ')
-        extras.get(`npm --prefix ./${d} uninstall ${ps} --no-save`)
-        extras.get(`npm --prefix ./${d} i`)
-        finish(d)
+        extras.get(`npm --prefix ./${directory} uninstall ${ps} --no-save`)
+        extras.get(`npm --prefix ./${directory} i`)
+        finish(directory)
       })
       break
-    case ops.UPDATE.cmd:
-      walk(function (d) {
-        extras.get(`npm --prefix ./${d} update`)
-        finish(d)
-      })
-      break
-    case ops.UPGRADE.cmd:
-      walk(function (d) {
-        extras.get(`npx npm-check-updates --cwd ./${d} -u`)
-        finish(d)
-      })
-      break
-    case ops.STATUS.cmd:
-      var result = []
-      walk(function (d) {
-        var status = extras.get(`git -C ./${d} status`)
-        var isEmpty = status.includes('nothing to commit, working tree clean')
-        if (!isEmpty) result.push(d)
-      })
-      console.log(result)
-      break
-    case ops.PUSH.cmd:
-      var message = await extras.input('Message: ')
-      console.log()
-
-      walk(function (d) {
-        extras.get(`git -C ./${d} add --all`)
-
-        if (!message) {
-          var status = extras.get(`git -C ./${d} status`)
-          status = util.parseGitStatus(status, true)
-          message = status.message
-        }
-
-        var result = extras.get(`git -C ./${d} commit -m '${message}'`)
-        result = result.split('\n')[1].trim()
-        result = result.includes('Your branch is up to date')
-          ? '0 file changed'
-          : result
-
-        var res = extras.run(`git -C ./${d} push`, { silent: true })
-
-        var error
-        if (res.code) {
-          extras.get(`git -C ./${d} reset HEAD~`)
-          error = true
-        }
-
-        finish(d, result, error)
-      })
-      break
-    case ops.PULL.cmd:
-      walk(function (d) {
-        extras.get(`git -C ./${d} stash`)
-        extras.get(`git -C ./${d} pull --rebase`)
-        extras.get(`git -C ./${d} stash apply`)
-        finish(d)
+    case ops.LINK.cmd:
+      walk(function ({ directory, packages }) {
+        var ps = packages.map((p) => `./${p}`).join(' ')
+        extras.get(`npm --prefix ./${directory} uninstall ${ps} --no-save`)
+        extras.get(`npm --prefix ./${directory} i ${ps} --no-save`)
+        finish(directory)
       })
       break
     case ops.LOG.cmd:
       var logs = []
 
-      walk(function (d) {
-        var res = extras.get(`git -C ./${d} log`)
-        util.parseGitLog(res, d, function (log) {
+      walk(function ({ directory }) {
+        var res = extras.get(`git -C ./${directory} log`)
+        util.parseGitLog(res, directory, function (log) {
           var author = log.author.toLowerCase()
           var isUserMatch = users
             .map((user) => author.includes(user.toLowerCase()))
@@ -202,6 +161,71 @@ async function run() {
         util.printGitLogs(logs)
       }
 
+      break
+    case ops.PULL.cmd:
+      walk(function ({ directory }) {
+        extras.get(`git -C ./${directory} stash`)
+        extras.get(`git -C ./${directory} pull --rebase`)
+        extras.get(`git -C ./${directory} stash apply`)
+        finish(directory)
+      })
+      break
+    case ops.PUSH.cmd:
+      var message = await extras.input('Message: ')
+      console.log()
+
+      walk(function ({ directory }) {
+        extras.get(`git -C ./${directory} add --all`)
+
+        if (!message) {
+          var status = extras.get(`git -C ./${directory} status`)
+          status = util.parseGitStatus(status)
+          message = status.message
+        }
+
+        var result = extras.get(`git -C ./${directory} commit -m '${message}'`)
+        result = result.split('\n')[1].trim()
+        result = result.includes('Your branch is up to date')
+          ? '0 file changed'
+          : result
+
+        var res = extras.run(`git -C ./${directory} push`, { silent: true })
+
+        var error
+        if (res.code) {
+          extras.get(`git -C ./${directory} reset HEAD~`)
+          error = true
+        }
+
+        finish(directory, result, error)
+      })
+      break
+    case ops.STATUS.cmd:
+      walk(function ({ directory }, idx) {
+        if (idx != 0) console.log()
+
+        var status = extras.get(`git -C ./${directory} status`)
+        var { isEmpty, changes } = util.parseGitStatus(status)
+
+        farge.green.log(`${directory}:\n`)
+        if (isEmpty) {
+          farge.white.log('No changes found.\n')
+        } else {
+          util.printGitStatus(changes)
+        }
+      })
+      break
+    case ops.UPDATE.cmd:
+      walk(function ({ directory }) {
+        extras.get(`npm --prefix ./${directory} update`)
+        finish(directory)
+      })
+      break
+    case ops.UPGRADE.cmd:
+      walk(function (d) {
+        extras.get(`npx npm-check-updates --cwd ./${d} -u`)
+        finish(d)
+      })
       break
     default:
       unknownCmd()
