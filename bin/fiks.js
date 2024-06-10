@@ -104,7 +104,7 @@ function finish(d, extra, error) {
 
   farge.green.log(`${symbol} ${act}: `)
   farge.white.log(`${root}/${d}`)
-  extra && farge.white.dim.log(extra)
+  extra && farge.white.dim.log(` - ${extra}`)
   console.log()
 }
 
@@ -162,7 +162,7 @@ async function run() {
       walk(function ({ directory }) {
         var res = extras.get(`git -C ./${directory} log`)
         util.parseGitLog(res, directory, function (log) {
-          var author = log.author.toLowerCase()
+          var author = log.author?.toLowerCase()
           var isUserMatch = users
             .map((user) => author.includes(user.toLowerCase()))
             .reduce((a, b) => a || b, false)
@@ -185,9 +185,16 @@ async function run() {
     case ops.PULL.cmd:
       walk(function ({ directory }) {
         extras.get(`git -C ./${directory} stash`)
-        extras.get(`git -C ./${directory} pull --rebase`)
+
+        var result = extras.run(`git -C ./${directory} pull --rebase`, {
+          silent: true
+        })
+
         extras.get(`git -C ./${directory} stash apply`)
-        finish(directory)
+
+        var { msg } = util.parseGitPull(result, directory)
+
+        finish(directory, msg)
       })
       break
     case ops.PUSH.cmd:
