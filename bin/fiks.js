@@ -22,6 +22,7 @@ var ops = {
   LOG: { cmd: 'log', start: 'Logging repositories', finish: 'Logged' },
   PULL: { cmd: 'pull', start: 'Pulling repositories', finish: 'Pulled' },
   PUSH: { cmd: 'push', start: 'Pushing repositories', finish: 'Pushed' },
+  RESET: { cmd: 'reset', start: 'Resetting repositories', finish: 'Reset' },
   STATUS: { cmd: 'status', start: 'Getting repositories status', finish: '' },
   UPDATE: { cmd: 'update', start: 'Updating repositories', finish: 'Updated' },
   UPGRADE: {
@@ -34,16 +35,17 @@ var ops = {
 function usage() {
   console.log('Usage:')
   console.log(`
-  fiks link - link all repos with npm i --no-save
   fiks install - install packages in all repos
-  fiks update - update all packages in all repos
-  fiks upgrade - upgrade all package versions in all repos
-  fiks status - prints which directories have unpushed changes
-  fiks push - push all repos at once (ask for commit message for each repo)
-  fiks push "commit message" - push all repos at once with the same commit message
+  fiks link - link all repos with npm i --no-save
+  fiks log - see a unified log of all repos, sorted by last change
   fiks pull - pull all repos, stashes and reapplies uncommited changes
   fiks pull repo1 repo2 - pull specified repos, stashes and reapplies uncommited changes
-  fiks log - see a unified log of all repos, sorted by last change
+  fiks push - push all repos at once (ask for commit message for each repo)
+  fiks push "commit message" - push all repos at once with the same commit message
+  fiks reset - resets and cleans all repos at once
+  fiks status - prints which directories have unpushed changes
+  fiks update - update all packages in all repos
+  fiks upgrade - upgrade all package versions in all repos
   `)
   process.exit(0)
 }
@@ -95,12 +97,13 @@ function finish(d, extra, error) {
     act = 'Error'
     extra = `${action} failed. Please check for merge conflicts.`
   } else {
-    act = action.charAt(action.length - 1) == 'e' ? `${action}d` : `${action}ed`
+    act = ops[cmd.toUpperCase()].finish
   }
 
-  var def = `${symbol} ${act}: ${root}/${d}`
-
-  console.log(extra ? `${def} - ${extra}` : def)
+  farge.green.log(`${symbol} ${act}: `)
+  farge.white.log(`${root}/${d}`)
+  extra && farge.white.dim.log(extra)
+  console.log()
 }
 
 function start() {
@@ -213,6 +216,13 @@ async function run() {
         } else {
           util.printGitStatus(changes)
         }
+      })
+      break
+    case ops.RESET.cmd:
+      walk(function ({ directory }) {
+        extras.get(`git -C ./${directory} reset --hard`)
+        extras.get(`git -C ./${directory} clean -df`)
+        finish(directory)
       })
       break
     case ops.UPDATE.cmd:
