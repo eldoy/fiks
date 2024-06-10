@@ -192,7 +192,11 @@ async function run() {
 
         extras.get(`git -C ./${directory} stash apply`)
 
-        var { msg } = util.parseGitPull(result, directory)
+        var { msg, files } = util.parseGitPull(result, directory)
+
+        if (files?.includes('package.json')) {
+          extras.get(`npm --prefix ./${directory} i`)
+        }
 
         finish(directory, msg)
       })
