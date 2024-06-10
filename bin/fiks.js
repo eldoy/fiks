@@ -13,6 +13,7 @@ var root = cwd.split('/').at(-1)
 var dir = extras.dir().filter((d) => !d.includes('.'))
 
 var ops = {
+  DIFF: { cmd: 'diff', start: 'Getting repositories diffs', finish: '' },
   INSTALL: {
     cmd: 'install',
     start: 'Installing repositories',
@@ -35,6 +36,7 @@ var ops = {
 function usage() {
   console.log('Usage:')
   console.log(`
+  fiks diff - shows diffs in all repos
   fiks install - install packages in all repos
   fiks link - link all repos with npm i --no-save
   fiks log - see a unified log of all repos, sorted by last change
@@ -123,6 +125,21 @@ async function run() {
   start()
 
   switch (cmd) {
+    case ops.DIFF.cmd:
+      walk(function ({ directory }, idx) {
+        if (idx != 0) console.log()
+
+        var diff = extras.get(`git -C ./${directory} diff`)
+
+        farge.green.log(`${directory}:\n`)
+        if (!diff) {
+          farge.white.log('No diffs found.\n')
+        } else {
+          diff = util.parseGitDiff(diff)
+          util.printGitDiff(diff)
+        }
+      })
+      break
     case ops.INSTALL.cmd:
       walk(function ({ directory, packages }) {
         var ps = packages.map((p) => `./${p}`).join(' ')
