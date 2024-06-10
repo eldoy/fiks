@@ -236,9 +236,13 @@ async function run() {
       })
       break
     case ops.RESET.cmd:
+      await extras.input(
+        'All changes including stashes will be lost. Hit enter to continue.\n'
+      )
       walk(function ({ directory }) {
         extras.get(`git -C ./${directory} reset --hard`)
         extras.get(`git -C ./${directory} clean -df`)
+        extras.get(`git -C ./${directory} stash clear`)
         finish(directory)
       })
       break
