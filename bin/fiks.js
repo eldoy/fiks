@@ -86,7 +86,7 @@ function walk(cb) {
       cb({ directory: directory.alias, packages }, idx)
       idx++
     } catch (err) {
-      console.error(`${root}/${directory}: ${err}`)
+      console.error(`❌ ${root}/${directory.alias || directory.name}: ${err}`)
       process.exit(0)
     }
   }
@@ -114,11 +114,11 @@ function finish(d, extra, error) {
 }
 
 function start() {
-  farge.green.log('\n⚠️ ' + ` Root: `)
-  farge.white.log(`${root}\n`)
+  farge.green.log('\n🌲 Root: ')
+  farge.white.log(`${cwd}\n`)
 
   var rep = repos.length ? repos : dir.map((d) => d.alias)
-  farge.green.log('⚠️ ' + ` Repositories: `)
+  farge.green.log('🍃 Repositories: ')
   farge.white.log(`${rep.join(', ')}\n`)
 
   var op = ops[cmd.toUpperCase()]
@@ -144,9 +144,9 @@ async function run() {
 
         var diff = extras.get(`git -C ${cwd}/${directory} diff`)
 
-        farge.green.log(`${root}/${directory}:\n`)
+        farge.green.log(`✅ ${root}/${directory}:\n`)
         if (!diff) {
-          farge.white.log('No diffs found.\n')
+          farge.white.log('⚠️  No diffs found.\n')
         } else {
           diff = util.parseGitDiff(diff)
           util.printGitDiff(diff)
@@ -194,7 +194,7 @@ async function run() {
       logs = logs.sort((a, b) => b.date - a.date).slice(0, LOG_SIZE)
 
       if (!logs.length) {
-        console.log('❌ No logs found.')
+        console.log('⚠️  No logs found.')
       } else {
         util.printGitLogs(logs)
       }
@@ -261,9 +261,9 @@ async function run() {
         var status = extras.get(`git -C ${cwd}/${directory} status`)
         var { isEmpty, changes } = util.parseGitStatus(status)
 
-        farge.green.log(`${root}/${directory}:\n`)
+        farge.green.log(`✅ ${root}/${directory}:\n`)
         if (isEmpty) {
-          farge.white.log('No changes found.\n')
+          farge.white.log('⚠️  No changes found.\n')
         } else {
           util.printGitStatus(changes)
         }
