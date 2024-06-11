@@ -154,11 +154,7 @@ async function run() {
       })
       break
     case ops.INSTALL.cmd:
-      walk(function ({ directory, packages }) {
-        var pkgs = packages.map((p) => p.name).join(' ')
-        extras.get(
-          `npm --prefix ${cwd}/${directory} uninstall ${pkgs} --no-save`
-        )
+      walk(function ({ directory }) {
         extras.get(`npm --prefix ${cwd}/${directory} i`)
         finish(directory)
       })
