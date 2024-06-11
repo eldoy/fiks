@@ -125,7 +125,7 @@ async function run() {
 
         var diff = extras.get(`git -C ./${directory} diff`)
 
-        farge.green.log(`${directory}:\n`)
+        farge.green.log(`${root}/${directory}:\n`)
         if (!diff) {
           farge.white.log('No diffs found.\n')
         } else {
@@ -233,7 +233,7 @@ async function run() {
         var status = extras.get(`git -C ./${directory} status`)
         var { isEmpty, changes } = util.parseGitStatus(status)
 
-        farge.green.log(`${directory}:\n`)
+        farge.green.log(`${root}/${directory}:\n`)
         if (isEmpty) {
           farge.white.log('No changes found.\n')
         } else {
