@@ -165,9 +165,12 @@ async function run() {
       break
     case ops.LINK.cmd:
       walk(function ({ directory, packages }) {
-        var ps = packages.map((p) => `./${p}`).join(' ')
-        extras.get(`npm --prefix ./${directory} uninstall ${ps} --no-save`)
-        extras.get(`npm --prefix ./${directory} i ${ps} --no-save`)
+        var pkgs = packages.map((p) => p.name).join(' ')
+        var links = packages.map((p) => `${cwd}/${p.alias}`).join(' ')
+        extras.get(
+          `npm --prefix ${cwd}/${directory} uninstall ${pkgs} --no-save`
+        )
+        extras.get(`npm --prefix ${cwd}/${directory} i ${links} --no-save`)
         finish(directory)
       })
       break
