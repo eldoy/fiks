@@ -178,13 +178,14 @@ async function run() {
       break
     case ops.PULL.cmd:
       walk(function ({ directory }) {
-        extras.get(`git -C ./${directory} stash`)
+        var result = extras.get(`git -C ./${directory} stash`)
+        var stashed = result.includes('Saved working directory')
 
-        var result = extras.run(`git -C ./${directory} pull --rebase`, {
+        result = extras.run(`git -C ./${directory} pull --rebase`, {
           silent: true
         })
 
-        extras.get(`git -C ./${directory} stash apply`)
+        stashed && extras.get(`git -C ./${directory} stash apply`)
 
         var { msg, files } = util.parseGitPull(result, directory)
 
