@@ -25,12 +25,7 @@ var ops = {
   PUSH: { cmd: 'push', start: 'Pushing repositories', finish: 'Pushed' },
   RESET: { cmd: 'reset', start: 'Resetting repositories', finish: 'Reset' },
   STATUS: { cmd: 'status', start: 'Getting repositories status', finish: '' },
-  UPDATE: { cmd: 'update', start: 'Updating repositories', finish: 'Updated' },
-  UPGRADE: {
-    cmd: 'upgrade',
-    start: 'Upgrading repositories',
-    finish: 'Upgraded'
-  }
+  UPDATE: { cmd: 'update', start: 'Updating repositories', finish: 'Updated' }
 }
 
 function usage() {
@@ -47,7 +42,6 @@ function usage() {
   fiks reset - resets and cleans all repos at once
   fiks status - prints which directories have unpushed changes
   fiks update - update all packages in all repos
-  fiks upgrade - upgrade all package versions in all repos
   `)
   process.exit(0)
 }
@@ -259,14 +253,10 @@ async function run() {
       break
     case ops.UPDATE.cmd:
       walk(function ({ directory }) {
-        extras.get(`npm --prefix ./${directory} update`)
+        extras.get(
+          `npx npm-check-updates --cwd ./${directory} -u && npm --prefix ./${directory} i`
+        )
         finish(directory)
-      })
-      break
-    case ops.UPGRADE.cmd:
-      walk(function (d) {
-        extras.get(`npx npm-check-updates --cwd ./${d} -u`)
-        finish(d)
       })
       break
     default:
