@@ -7,12 +7,19 @@ var util = require('../lib/util.js')
 var LOG_SIZE = 10
 
 var { cmd, repos, users } = util.parseArgs(process.argv)
+var { cwd, root, dir } = util.parseDir()
 
-var cwd = process.cwd()
-var root = cwd.split('/').at(-1)
-var dir = extras.dir().filter((d) => !d.includes('.'))
+if (!root && cmd != 'init') {
+  console.log()
+  console.error(
+    "⚠️  Root directory not found. Please run 'fiks init' at your root directory."
+  )
+  console.log()
+  process.exit(0)
+}
 
 var ops = {
+  INIT: { cmd: 'init', start: 'Initializing fiks', finish: '' },
   DIFF: { cmd: 'diff', start: 'Getting repositories diffs', finish: '' },
   INSTALL: {
     cmd: 'install',
@@ -31,6 +38,7 @@ var ops = {
 function usage() {
   console.log('Usage:')
   console.log(`
+  fiks init - sets up current directory as a fiks root directory
   fiks diff - shows diffs in all repos
   fiks install - install packages in all repos
   fiks link - link all repos with npm i --no-save
@@ -60,19 +68,22 @@ if (
   unknownCmd()
 }
 
-var invalid = repos.filter((repo) => !dir.includes(repo))
+var invalid = repos.filter((repo) => !dir.map((d) => d.alias).includes(repo))
 if (invalid.length) {
   console.error(`Invalid repos: ${invalid.join(', ')}`)
   process.exit(0)
 }
 
 function walk(cb) {
-  var directories = repos.length ? repos : dir
+  var directories = repos.length
+    ? dir.filter(({ alias }) => repos.includes(alias))
+    : dir
+
   var idx = 0
   for (var directory of directories) {
     var packages = directories.filter((d) => d != directory)
     try {
-      cb({ directory, packages }, idx)
+      cb({ directory: directory.alias, packages }, idx)
       idx++
     } catch (err) {
       console.error(`${root}/${directory}: ${err}`)
@@ -106,7 +117,7 @@ function start() {
   farge.green.log('\n⚠️ ' + ` Root: `)
   farge.white.log(`${root}\n`)
 
-  var rep = repos.length ? repos : dir
+  var rep = repos.length ? repos : dir.map((d) => d.alias)
   farge.green.log('⚠️ ' + ` Repositories: `)
   farge.white.log(`${rep.join(', ')}\n`)
 
@@ -116,14 +127,22 @@ function start() {
 }
 
 async function run() {
-  start()
+  cmd != ops.INIT.cmd && start()
 
   switch (cmd) {
+    case ops.INIT.cmd:
+      try {
+        extras.write('./fiks.json', {})
+        console.log('\n✅ Fiks successfully initalized.')
+      } catch (err) {
+        console.error('❌ Fiks failed to initialize.', err)
+      }
+      break
     case ops.DIFF.cmd:
       walk(function ({ directory }, idx) {
         if (idx != 0) console.log()
 
-        var diff = extras.get(`git -C ./${directory} diff`)
+        var diff = extras.get(`git -C ${cwd}/${directory} diff`)
 
         farge.green.log(`${root}/${directory}:\n`)
         if (!diff) {
@@ -136,9 +155,11 @@ async function run() {
       break
     case ops.INSTALL.cmd:
       walk(function ({ directory, packages }) {
-        var ps = packages.map((p) => `./${p}`).join(' ')
-        extras.get(`npm --prefix ./${directory} uninstall ${ps} --no-save`)
-        extras.get(`npm --prefix ./${directory} i`)
+        var pkgs = packages.map((p) => p.name).join(' ')
+        extras.get(
+          `npm --prefix ${cwd}/${directory} uninstall ${pkgs} --no-save`
+        )
+        extras.get(`npm --prefix ${cwd}/${directory} i`)
         finish(directory)
       })
       break
@@ -154,7 +175,7 @@ async function run() {
       var logs = []
 
       walk(function ({ directory }) {
-        var res = extras.get(`git -C ./${directory} log`)
+        var res = extras.get(`git -C ${cwd}/${directory} log`)
         util.parseGitLog(res, directory, function (log) {
           var author = log.author?.toLowerCase()
           var isUserMatch = users
@@ -178,19 +199,19 @@ async function run() {
       break
     case ops.PULL.cmd:
       walk(function ({ directory }) {
-        var result = extras.get(`git -C ./${directory} stash`)
+        var result = extras.get(`git -C ${cwd}/${directory} stash`)
         var stashed = result.includes('Saved working directory')
 
-        result = extras.run(`git -C ./${directory} pull --rebase`, {
+        result = extras.run(`git -C ${cwd}/${directory} pull --rebase`, {
           silent: true
         })
 
-        stashed && extras.get(`git -C ./${directory} stash apply`)
+        stashed && extras.get(`git -C ${cwd}/${directory} stash apply`)
 
-        var { msg, files } = util.parseGitPull(result, directory)
+        var { msg, files } = util.parseGitPull(result, cwd, directory)
 
         if (files?.includes('package.json')) {
-          extras.get(`npm --prefix ./${directory} i`)
+          extras.get(`npm --prefix ${cwd}/${directory} i`)
         }
 
         finish(directory, msg)
@@ -201,25 +222,29 @@ async function run() {
       console.log()
 
       walk(function ({ directory }) {
-        extras.get(`git -C ./${directory} add --all`)
+        extras.get(`git -C ${cwd}/${directory} add --all`)
 
         if (!message) {
-          var status = extras.get(`git -C ./${directory} status`)
+          var status = extras.get(`git -C ${cwd}/${directory} status`)
           status = util.parseGitStatus(status)
           message = status.message
         }
 
-        var result = extras.get(`git -C ./${directory} commit -m '${message}'`)
+        var result = extras.get(
+          `git -C ${cwd}/${directory} commit -m '${message}'`
+        )
         result = result.split('\n')[1].trim()
         result = result.includes('Your branch is up to date')
           ? '0 file changed'
           : result
 
-        var res = extras.run(`git -C ./${directory} push`, { silent: true })
+        var res = extras.run(`git -C ${cwd}/${directory} push`, {
+          silent: true
+        })
 
         var error
         if (res.code) {
-          extras.get(`git -C ./${directory} reset HEAD~`)
+          extras.get(`git -C ${cwd}/${directory} reset HEAD~`)
           error = true
         }
 
@@ -230,7 +255,7 @@ async function run() {
       walk(function ({ directory }, idx) {
         if (idx != 0) console.log()
 
-        var status = extras.get(`git -C ./${directory} status`)
+        var status = extras.get(`git -C ${cwd}/${directory} status`)
         var { isEmpty, changes } = util.parseGitStatus(status)
 
         farge.green.log(`${root}/${directory}:\n`)
@@ -246,16 +271,16 @@ async function run() {
         'All changes including stashes will be lost. Hit enter to continue.\n'
       )
       walk(function ({ directory }) {
-        extras.get(`git -C ./${directory} reset --hard`)
-        extras.get(`git -C ./${directory} clean -df`)
-        extras.get(`git -C ./${directory} stash clear`)
+        extras.get(`git -C ${cwd}/${directory} reset --hard`)
+        extras.get(`git -C ${cwd}/${directory} clean -df`)
+        extras.get(`git -C ${cwd}/${directory} stash clear`)
         finish(directory)
       })
       break
     case ops.UPDATE.cmd:
       walk(function ({ directory }) {
         extras.get(
-          `npx npm-check-updates --cwd ./${directory} -u && npm --prefix ./${directory} i`
+          `npx npm-check-updates --cwd ${cwd}/${directory} -u && npm --prefix ${cwd}/${directory} i`
         )
         finish(directory)
       })
