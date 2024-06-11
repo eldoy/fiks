@@ -182,7 +182,7 @@ async function run() {
         util.parseGitLog(res, directory, function (log) {
           var author = log.author?.toLowerCase()
           var isUserMatch = users
-            .map((user) => author.includes(user.toLowerCase()))
+            .map((user) => author?.includes(user.toLowerCase()))
             .reduce((a, b) => a || b, false)
 
           if (!users.length || isUserMatch) {
