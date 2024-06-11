@@ -81,12 +81,12 @@ function walk(cb) {
 
   var idx = 0
   for (var directory of directories) {
-    var packages = directories.filter((d) => d != directory)
+    var packages = dir.filter((d) => d.alias != directory.alias)
     try {
       cb({ directory: directory.alias, packages }, idx)
       idx++
     } catch (err) {
-      console.error(`❌ ${root}/${directory.alias || directory.name}: ${err}`)
+      console.error(`❌ ${root}/${directory.alias}: ${err}`)
       process.exit(0)
     }
   }
@@ -161,11 +161,7 @@ async function run() {
       break
     case ops.LINK.cmd:
       walk(function ({ directory, packages }) {
-        var pkgs = packages.map((p) => p.name).join(' ')
         var links = packages.map((p) => `${cwd}/${p.alias}`).join(' ')
-        extras.get(
-          `npm --prefix ${cwd}/${directory} uninstall ${pkgs} --no-save`
-        )
         extras.get(`npm --prefix ${cwd}/${directory} i ${links} --no-save`)
         finish(directory)
       })
