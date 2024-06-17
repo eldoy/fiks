@@ -81,7 +81,7 @@ function walk(cb) {
 
   var idx = 0
   for (var directory of directories) {
-    var packages = dir.filter((d) => d.alias != directory.alias)
+    var packages = dir.filter((d) => directory.deps.includes(d.name))
     try {
       cb({ directory: directory.alias, packages }, idx)
       idx++
