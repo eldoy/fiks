@@ -1,3 +1,5 @@
+### TODO
+
 - [ ] Install settings in ~/.config/fiks/apps.json
 - [ ] Build internal database of entire structure on startup:
   root = config.root
