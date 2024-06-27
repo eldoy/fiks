@@ -133,7 +133,7 @@ async function run() {
     case ops.INIT.cmd:
       try {
         extras.write('./.fiks.json', {})
-        console.log('\n✅ Fiks successfully initalized.')
+        console.log('\n✅ Fiks successfully initialized.')
       } catch (err) {
         console.error('❌ Fiks failed to initialize.', err)
       }
