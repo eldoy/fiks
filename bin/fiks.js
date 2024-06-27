@@ -113,16 +113,13 @@ function finish(d, extra, error) {
 }
 
 function start() {
-  console.log('\n🌲 Root: ')
-  console.log(`${cwd}\n`)
-
-  var rep = repos.length ? repos : dir.map((d) => d.alias)
-  console.log('🍃 Repositories: ')
-  console.log(`${rep.join(', ')}\n`)
-
-  var op = ops[cmd.toUpperCase()]
-
-  console.log(`\n🔥 ${op.start} 🔥\n\n`)
+  // console.log('\n🌲 Root: ')
+  // console.log(`${cwd}\n`)
+  // var rep = repos.length ? repos : dir.map((d) => d.alias)
+  // console.log('🍃 Repositories: ')
+  // console.log(`${rep.join(', ')}\n`)
+  // var op = ops[cmd.toUpperCase()]
+  // console.log(`\n🔥 ${op.start} 🔥\n\n`)
 }
 
 async function run() {
@@ -251,7 +248,7 @@ async function run() {
         var { isEmpty, changes } = util.parseGitStatus(status)
 
         if (!isEmpty) {
-          console.log(`${root}/${directory}:\n`)
+          console.log(`✅ ${root}/${directory}:\n`)
           util.printGitStatus(changes)
         }
       })
