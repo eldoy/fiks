@@ -7,7 +7,7 @@
     "fiks": "bin/fiks.js"
   },
   "scripts": {
-    "test": "echo 'no test runner installed'"
+    "test": "nodemon -q --exec spekk"
   },
   "repository": {
     "type": "git",
@@ -17,5 +17,8 @@
   "license": "MIT",
   "dependencies": {
     "extras": "^0.13.0"
+  },
+  "devDependencies": {
+    "spekk": "^0.2.2"
   }
 }
