@@ -247,15 +247,11 @@ async function run() {
       break
     case ops.STATUS.cmd:
       walk(function ({ directory }, idx) {
-        if (idx != 0) console.log()
-
         var status = extras.get(`git -C ${cwd}/${directory} status`)
         var { isEmpty, changes } = util.parseGitStatus(status)
 
-        console.log(`✅ ${root}/${directory}:\n`)
-        if (isEmpty) {
-          console.log('⚠️  No changes found.\n')
-        } else {
+        if (!isEmpty) {
+          console.log(`${root}/${directory}:\n`)
           util.printGitStatus(changes)
         }
       })
