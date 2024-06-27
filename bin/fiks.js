@@ -10,11 +10,9 @@ var { cmd, repos, users } = util.parseArgs(process.argv)
 var { cwd, root, dir } = util.parseDir()
 
 if (!root && cmd != 'init') {
-  console.log()
   console.error(
     "⚠️  Root directory not found. Please run 'fiks init' at your root directory."
   )
-  console.log()
   process.exit(0)
 }
 
@@ -36,7 +34,7 @@ var ops = {
 }
 
 function usage() {
-  console.log(`\nFiks version ${package.version}\n`)
+  console.log(`\nFiks v${package.version}\n`)
   console.log('Usage:')
   console.log(`
   fiks init - sets up current directory as a fiks root directory
@@ -96,7 +94,6 @@ function walk(cb) {
 
 function finish(d, extra, error) {
   if (!d) {
-    console.log()
     return
   }
   var action = cmd.charAt(0).toUpperCase() + cmd.slice(1)
@@ -112,7 +109,6 @@ function finish(d, extra, error) {
   console.log(`${symbol} ${act}: `)
   console.log(`${root}/${d}`)
   extra && console.log(` - ${extra}`)
-  console.log()
 }
 
 function start() {
@@ -139,8 +135,6 @@ async function run() {
       break
     case ops.DIFF.cmd:
       walk(function ({ directory }, idx) {
-        if (idx != 0) console.log()
-
         var diff = extras.get(`git -C ${cwd}/${directory} diff`)
 
         console.log(`✅ ${root}/${directory}:\n`)
@@ -213,7 +207,6 @@ async function run() {
       break
     case ops.PUSH.cmd:
       var message = await extras.input('Message: ')
-      console.log()
 
       walk(function ({ directory }) {
         extras.get(`git -C ${cwd}/${directory} add --all`)
@@ -251,7 +244,7 @@ async function run() {
         var { isEmpty, changes } = util.parseGitStatus(status)
 
         if (!isEmpty) {
-          console.log(`✅ ${root}/${directory}:\n`)
+          console.log(`${root}/${directory}:\n`)
           util.printGitStatus(changes)
         }
       })
@@ -279,7 +272,6 @@ async function run() {
       unknownCmd()
   }
 
-  console.log()
   process.exit(0)
 }
 
