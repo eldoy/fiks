@@ -7,6 +7,7 @@
       dir: 'search',
       source: 'git',
       hash: 'e34fg4699a',
+      linked: true,
       dependencies: [
         'firmalisten-config',
         'firmalisten-plugins'
@@ -26,7 +27,7 @@
 
   We cross-check the dependencies with the package.json names. If a package in the dependencies exists in the parent directory, then set 'dir' to the directory of the package.
 
-  If 'dir' exists, it can be linked.
+  If 'dir' exists, it can be linked. If 'linked' is true then it's already linked.
 
   If the package starts with 'github' the source is set to 'git', which means we have to run 'npm update' to update this library to the latest version.
 
@@ -46,6 +47,9 @@ The link function should:
 The unlink function should:
   - Unlink local directories with 'npm install' for each linked library
   - Support distinct repo names
+
+The link list function should:
+  - Print the linked status of all linkable libraries
 
 The install function should be more advanced:
   - For normal libs do 'npm install'
