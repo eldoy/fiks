@@ -36,7 +36,7 @@ var ops = {
 }
 
 function usage() {
-  console.log(`\nFiks version ${package.json}\n`)
+  console.log(`\nFiks version ${package.version}\n`)
   console.log('Usage:')
   console.log(`
   fiks init - sets up current directory as a fiks root directory
