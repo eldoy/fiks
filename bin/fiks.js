@@ -2,6 +2,7 @@
 
 var extras = require('extras')
 var util = require('../lib/util.js')
+var package = require('../package.json')
 
 var LOG_SIZE = 10
 
@@ -35,6 +36,7 @@ var ops = {
 }
 
 function usage() {
+  console.log(`\nFiks version ${package.json}\n`)
   console.log('Usage:')
   console.log(`
   fiks init - sets up current directory as a fiks root directory
@@ -50,7 +52,8 @@ function usage() {
   fiks status - prints which directories have unpushed changes
   fiks update - update all packages in all repos
   `)
-  process.exit(0)
+
+  process.exit()
 }
 
 function unknownCmd() {
