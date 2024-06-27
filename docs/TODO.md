@@ -48,7 +48,7 @@ The unlink function should:
   - Unlink local directories with 'npm install' for each linked library
   - Support distinct repo names
 
-The link list function should:
+The linked function should:
   - Print the linked status of all linkable libraries
 
 The install function should be more advanced:
