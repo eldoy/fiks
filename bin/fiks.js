@@ -107,23 +107,23 @@ function finish(d, extra, error) {
     act = ops[cmd.toUpperCase()].finish
   }
 
-  farge.green.log(`${symbol} ${act}: `)
-  farge.white.log(`${root}/${d}`)
-  extra && farge.white.dim.log(` - ${extra}`)
+  farge.bold.log(`${symbol} ${act}: `)
+  farge.green.log(`${root}/${d}`)
+  extra && console.log(` - ${extra}`)
   console.log()
 }
 
 function start() {
-  farge.green.log('\n🌲 Root: ')
-  farge.white.log(`${cwd}\n`)
+  farge.bold.log('\n🌲 Root: ')
+  farge.green.log(`${cwd}\n`)
 
   var rep = repos.length ? repos : dir.map((d) => d.alias)
-  farge.green.log('🍃 Repositories: ')
-  farge.white.log(`${rep.join(', ')}\n`)
+  farge.bold.log('🍃 Repositories: ')
+  farge.green.log(`${rep.join(', ')}\n`)
 
   var op = ops[cmd.toUpperCase()]
 
-  farge.bold.green.log(`\n🔥 ${op.start} 🔥\n\n`)
+  console.log(`\n🔥 ${op.start} 🔥\n\n`)
 }
 
 async function run() {
@@ -144,9 +144,9 @@ async function run() {
 
         var diff = extras.get(`git -C ${cwd}/${directory} diff`)
 
-        farge.green.log(`✅ ${root}/${directory}:\n`)
+        farge.bold.log(`✅ ${root}/${directory}:\n`)
         if (!diff) {
-          farge.white.log('⚠️  No diffs found.\n')
+          farge.green.log('⚠️  No diffs found.\n')
         } else {
           diff = util.parseGitDiff(diff)
           util.printGitDiff(diff)
@@ -253,9 +253,9 @@ async function run() {
         var status = extras.get(`git -C ${cwd}/${directory} status`)
         var { isEmpty, changes } = util.parseGitStatus(status)
 
-        farge.green.log(`✅ ${root}/${directory}:\n`)
+        farge.bold.log(`✅ ${root}/${directory}:\n`)
         if (isEmpty) {
-          farge.white.log('⚠️  No changes found.\n')
+          farge.green.log('⚠️  No changes found.\n')
         } else {
           util.printGitStatus(changes)
         }
