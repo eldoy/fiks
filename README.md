@@ -44,7 +44,7 @@ fiks install
 fiks update
 
 # Upgrade packages in all repos
-# Runs npm-check-updated -u && npm i under the hood for each repo
+# Runs npm-check-updates -u && npm i under the hood for each repo
 fiks upgrade
 
 # Print which directories have changes we haven't pushed
