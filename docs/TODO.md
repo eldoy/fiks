@@ -1,5 +1,9 @@
 ### TODO
 
+- [ ] Status
+- [ ] Log
+- [ ] Update
+
 - [ ] Re-implement the commands
   - [ ] Write tests for functions that convert to JSON
 
