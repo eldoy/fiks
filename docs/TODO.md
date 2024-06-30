@@ -1,12 +1,12 @@
 ### TODO
 
 Missing:
-  - [ ] Status
+  - [x] Status
   - [x] Log
   - [ ] Update
-  - [ ] Reset
-  - [ ] Push
   - [ ] Pull
+  - [ ] Push
+  - [ ] Reset
 
 The link function should:
   - Link to local directories with 'npm install --no-save'
