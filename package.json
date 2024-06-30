@@ -1,6 +1,6 @@
 {
   "name": "fiks",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Repo management tool",
   "main": "index.js",
   "bin": {
