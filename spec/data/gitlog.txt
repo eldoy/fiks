@@ -1,0 +1,12 @@
+commit 0b77fc09224fcca326741fef2e32e9c9db25d8dd (HEAD -> master, origin/master)
+Merge: b37a41b 0bbb91d
+Author: Vidar Eldøy <vidar@eldoy.com>
+Date:   Sat Jun 29 22:17:03 2024 +0200
+
+    Output test
+
+commit 61466dcc4eddf6abff92ba319c41d40cc10c7a0e
+Author: Vidar Eldøy <vidar@eldoy.com>
+Date:   Sat Jun 29 21:36:15 2024 +0200
+
+    Move legacy

@@ -1,10 +1,12 @@
-var outputs = require('../../lib/outputs.js')
+var out = require('../../lib/outputs.js')
 
-setup(async function () {
-  console.info = function () {}
-})
+setup(async function () {})
 
-it('should output the standard', async function ({ t }) {
-  var result = outputs.standard('out')
-  t.equal(outputs.standard('out'), 'out')
+it('should output to standard', async function ({ t }) {
+  var result
+  console.info = function (output) {
+    result = output
+  }
+  out.std('out')
+  t.equal(result, 'out')
 })
