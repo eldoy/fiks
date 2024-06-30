@@ -1,1 +1,0 @@
-- [ ] Implement parallel execution (GH[#13](https://github.com/eldoy/fiks/issues/13))
