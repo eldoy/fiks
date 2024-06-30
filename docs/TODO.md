@@ -10,7 +10,7 @@ Functions:
   - [x] Update
   - [x] Reset
   - [x] Pull
-  - [ ] Push
+  - [x] Push
 
 The link function should:
   - Link to local directories with 'npm install --no-save'
