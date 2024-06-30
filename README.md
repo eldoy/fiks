@@ -31,40 +31,20 @@ npm i -g fiks
 
 ### Usage
 
-Fiks has a very intuitive command line interface. Run the `fiks` command from the root of your application:
+Run `fiks` from the root of your application:
 
 ```
-# Automatically link all node_modules with npm i --no-save
-fiks link
-
-# Install packages in all repos
-fiks install
-
-# Update packages in all repos
-fiks update
-
-# Upgrade packages in all repos
-# Runs npm-check-updates -u && npm i under the hood for each repo
-fiks upgrade
-
-# Print which directories have changes we haven't pushed
-fiks status
-
-# Push all repositories at once
-# Will ask for commit message for each of them
-fiks push
-
-# Push all repositories at once with the same commit message
-fiks push "commit message"
-
-# Pull all repositories, stash first if you already have changes
-fiks pull
-
-# Pull specified repositories, stash first if you already have changes
-fiks pull db data
-
-# See a unified log of all repositories, sorted by last change
-fiks log
+fiks install - install packages
+fiks link - link to local repos
+fiks unlink - unlink all repos
+fiks linked - display link status
+fiks log - display unified log
+fiks pull - pull all repos
+fiks push - push all repos
+fiks reset - reset and clean
+fiks status - prints git status
+fiks update - update packages
+fiks help - display this help message
 ```
 
 MIT Licensed. Enjoy!
