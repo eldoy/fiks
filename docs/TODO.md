@@ -1,11 +1,15 @@
 ### TODO
 
-Missing:
+Functions:
+  - [x] Link
+  - [x] Unlink
+  - [x] Linked
+  - [x] Install
   - [x] Status
   - [x] Log
-  - [ ] Update
-  - [ ] Pull
+  - [x] Update
   - [ ] Push
+  - [ ] Pull
   - [ ] Reset
 
 The link function should:
