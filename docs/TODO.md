@@ -1,15 +1,12 @@
 ### TODO
 
-- [ ] Status
-- [ ] Log
-- [ ] Update
-
-- [ ] Re-implement the commands
-  - [ ] Write tests for functions that convert to JSON
-
-- [ ] Run commands and pass to printer
-  - [ ] Nothing to do means empty output
-  - [ ] Run as much as possible in parallel
+Missing:
+  - [ ] Status
+  - [x] Log
+  - [ ] Update
+  - [ ] Reset
+  - [ ] Push
+  - [ ] Pull
 
 The link function should:
   - Link to local directories with 'npm install --no-save'
@@ -58,13 +55,3 @@ The log function should:
   - Show a mixed log for all
   - Support users with @username
   - Support distinct repo names
-
-The user add function should:
-  - Add a username alias to fiks config
-  - Ask for user email and alias shortname
-
-The user delete function should:
-  - Ask for alias shortname or email and delete from config
-
-The user list function should:
-  - Print the list of users shortname aliases found in the config
