@@ -145,6 +145,7 @@ fiks pull
 
   admin:
     5 files changed, +500 additions, -304 deletions
+    no packages to install...
     done.
 
   site:
@@ -164,3 +165,6 @@ fiks run "ls -la"
 (run the command in all repos)
 
 fiks run "rm -rf node_modules"
+
+fiks run -r admin cmd
+fisk run -r admin log
