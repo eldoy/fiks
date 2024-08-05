@@ -3,10 +3,10 @@ var extras = require('extras')
 var terminal = require('xecutor')
 var farge = require('farge')()
 var commands = {
-  link: require('../lib/link.js'),
-  sync: require('../lib/sync.js'),
-  status: require('../lib/status.js'),
-  help: require('../lib/help.js')
+  link: require('../lib/cmd/link.js'),
+  sync: require('../lib/cmd/sync.js'),
+  status: require('../lib/cmd/status.js'),
+  help: require('../lib/cmd/help.js')
 }
 
 var SYMBOLS = { ok: '✔', no: '✖' }
