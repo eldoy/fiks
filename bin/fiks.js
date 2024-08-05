@@ -3,9 +3,11 @@ var extras = require('extras')
 var terminal = require('xecutor')
 var farge = require('farge')()
 var commands = {
-  link: require('../lib/cmd/link.js'),
   sync: require('../lib/cmd/sync.js'),
   status: require('../lib/cmd/status.js'),
+  pull: require('../lib/cmd/pull.js'),
+  link: require('../lib/cmd/link.js'),
+  update: require('../lib/cmd/update.js'),
   help: require('../lib/cmd/help.js')
 }
 
