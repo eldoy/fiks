@@ -9,6 +9,7 @@ var commands = {
   link: require('../lib/cmd/link.js'),
   update: require('../lib/cmd/update.js'),
   upgrade: require('../lib/cmd/upgrade.js'),
+  reset: require('../lib/cmd/reset.js'),
   help: require('../lib/cmd/help.js')
 }
 
