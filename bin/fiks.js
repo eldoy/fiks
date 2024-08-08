@@ -8,6 +8,7 @@ var commands = {
   pull: require('../lib/cmd/pull.js'),
   link: require('../lib/cmd/link.js'),
   update: require('../lib/cmd/update.js'),
+  upgrade: require('../lib/cmd/upgrade.js'),
   help: require('../lib/cmd/help.js')
 }
 
